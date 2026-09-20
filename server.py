@@ -1,51 +1,17 @@
-"""EasyFood — API com persistência (Missão 3).
+"""EasyFood — ponto de entrada do servidor.
 
-GET e POST /restaurants via SQLAlchemy + SQLite.
+Responsabilidade única: inicializar o banco e ligar o servidor HTTP.
 """
 
-import os
-
-from dotenv import load_dotenv
-from flask import Flask, jsonify, request
-from sqlalchemy import create_engine, select
-from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
-
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///easyfood.db")
-
-app = Flask(__name__)
-engine = create_engine(
-    DATABASE_URL,
-    echo=False,
-    connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {},
-)
-
-
-class Base(DeclarativeBase):
-    pass
-
-
-class Restaurant(Base):
-    __tablename__ = "restaurants"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(nullable=False)
-    category: Mapped[str] = mapped_column(nullable=False)
-    rating: Mapped[float] = mapped_column(default=0.0)
-
-    def to_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "category": self.category,
-            "rating": self.rating,
-        }
+from src.app import create_app
+from src.database.db import Base, engine, get_session
+from src.database.models import Restaurant
+from sqlalchemy import select
 
 
 def init_db() -> None:
     Base.metadata.create_all(engine)
-    with Session(engine) as session:
+    with get_session() as session:
         if session.scalar(select(Restaurant).limit(1)) is None:
             session.add_all(
                 [
@@ -57,39 +23,7 @@ def init_db() -> None:
             session.commit()
 
 
-@app.get("/restaurants")
-def list_restaurants():
-    try:
-        with Session(engine) as session:
-            rows = session.scalars(select(Restaurant).order_by(Restaurant.id)).all()
-            return jsonify([r.to_dict() for r in rows])
-    except Exception:
-        return jsonify({"error": "Erro interno do servidor"}), 500
-
-
-@app.post("/restaurants")
-def create_restaurant():
-    data = request.get_json(silent=True) or {}
-    name = data.get("name")
-    category = data.get("category")
-    rating = data.get("rating", 0)
-
-    if not name or not category:
-        return jsonify({"error": "Nome e categoria são obrigatórios"}), 400
-
-    try:
-        with Session(engine) as session:
-            restaurant = Restaurant(
-                name=name,
-                category=category,
-                rating=float(rating) if rating is not None else 0.0,
-            )
-            session.add(restaurant)
-            session.commit()
-            session.refresh(restaurant)
-            return jsonify(restaurant.to_dict()), 201
-    except Exception:
-        return jsonify({"error": "Erro interno do servidor"}), 500
+app = create_app()
 
 
 if __name__ == "__main__":
