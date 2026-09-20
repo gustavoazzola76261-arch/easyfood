@@ -1,12 +1,17 @@
 """EasyFood — ponto de entrada do servidor.
 
-Responsabilidade única: inicializar o banco e ligar o servidor HTTP.
+Responsabilidade única: carregar ambiente, inicializar o banco e ligar o servidor.
 """
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+from sqlalchemy import select
 
 from src.app import create_app
 from src.database.db import Base, engine, get_session
 from src.database.models import Restaurant
-from sqlalchemy import select
 
 
 def init_db() -> None:
