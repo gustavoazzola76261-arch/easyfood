@@ -16,6 +16,6 @@ jobs:
         run: pip install -r requirements.txt
       - name: Rodar testes
         env:
-          DATABASE_URL: sqlite:///:memory:
-          JWT_SECRET: ci-secret-easyfood
+          DATABASE_URL: "sqlite:///:memory:"
+          JWT_SECRET: "ci-secret-easyfood"
         run: pytest tests/ -v
