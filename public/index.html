@@ -384,6 +384,67 @@
       margin-bottom: 8px;
     }
 
+    .auth-screen {
+      display: none;
+      padding: 24px 20px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .auth-screen.active {
+      display: block;
+    }
+
+    .auth-screen h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .auth-screen .subtitle {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .link-btn {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: none;
+      color: #333;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 8px;
+    }
+
+    .logout-btn {
+      width: 100%;
+      padding: 12px;
+      background: #fff;
+      color: #c62828;
+      border: 1px solid #ffcdd2;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+
+    .app-shell {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .app-shell.active {
+      display: flex;
+    }
+
     /* Add Restaurant Form */
     .add-restaurant-section {
       display: none;
@@ -526,110 +587,127 @@
       </span>
     </div>
 
-    <!-- Search -->
-    <div class="search-bar">
-      <span>🔍</span>
-      <input type="text" placeholder="Buscar restaurantes" disabled>
-      <span class="filter-icon">⚙️</span>
+    <div class="auth-screen active" id="screen-login">
+      <h2>Entrar</h2>
+      <p class="subtitle">Faça login para ver restaurantes e cadastrar novos estabelecimentos.</p>
+      <div class="form-group">
+        <label for="login-email">E-mail</label>
+        <input type="email" id="login-email" placeholder="aluno@easyfood.com">
+      </div>
+      <div class="form-group">
+        <label for="login-password">Senha</label>
+        <input type="password" id="login-password" placeholder="••••••">
+      </div>
+      <button type="button" class="submit-btn" id="login-btn">Entrar</button>
+      <button type="button" class="link-btn" id="go-register-btn">Inscreva-se</button>
+      <div class="form-message" id="login-message"></div>
     </div>
 
-    <!-- Categories -->
-    <div class="categories" id="categories">
-      <div class="category-chip active" data-category="Todos">🍽️ Todos</div>
-      <div class="category-chip" data-category="Burger">🍔 Burger</div>
-      <div class="category-chip" data-category="Pizza">🍕 Pizza</div>
-      <div class="category-chip" data-category="Sushi">🍣 Sushi</div>
-      <div class="category-chip" data-category="Saudável">🥗 Saudável</div>
+    <div class="auth-screen" id="screen-register">
+      <h2>Criar conta</h2>
+      <p class="subtitle">Cadastre-se para usar a EasyFood. Depois você volta ao login.</p>
+      <div class="form-group">
+        <label for="register-name">Nome</label>
+        <input type="text" id="register-name" placeholder="Ex: Gustavo">
+      </div>
+      <div class="form-group">
+        <label for="register-email">E-mail</label>
+        <input type="email" id="register-email" placeholder="aluno@easyfood.com">
+      </div>
+      <div class="form-group">
+        <label for="register-password">Senha</label>
+        <input type="password" id="register-password" placeholder="••••••">
+      </div>
+      <button type="button" class="submit-btn" id="register-btn">Criar conta</button>
+      <button type="button" class="link-btn" id="go-login-btn">Voltar ao login</button>
+      <div class="form-message" id="register-message"></div>
     </div>
 
-    <!-- Section header -->
-    <div class="section-header">
-      <h2>Restaurantes</h2>
-      <span class="order-btn">Ordenar ▾</span>
-    </div>
+    <div class="app-shell" id="app-shell">
+      <!-- Search -->
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" placeholder="Buscar restaurantes" disabled>
+        <span class="filter-icon">⚙️</span>
+      </div>
 
-    <!-- Restaurant list (scrollable) -->
-    <div class="restaurant-list" id="restaurant-list">
-      <div class="loading">
-        <div class="spinner"></div>
-        <p>Carregando restaurantes...</p>
+      <!-- Categories -->
+      <div class="categories" id="categories">
+        <div class="category-chip active" data-category="Todos">🍽️ Todos</div>
+        <div class="category-chip" data-category="Burger">🍔 Burger</div>
+        <div class="category-chip" data-category="Pizza">🍕 Pizza</div>
+        <div class="category-chip" data-category="Sushi">🍣 Sushi</div>
+        <div class="category-chip" data-category="Saudável">🥗 Saudável</div>
       </div>
-    </div>
 
-    <!-- Add Restaurant Form (hidden by default) -->
-    <div class="add-restaurant-section" id="add-restaurant-section">
-      <h2>➕ Cadastrar Restaurante</h2>
-      <div id="auth-box" style="margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid #f0f0f0;">
-        <p style="font-size: 13px; color: #666; margin-bottom: 12px;">
-          O cadastro exige login (JWT). Entre ou crie uma conta.
-        </p>
-        <div class="form-group">
-          <label for="auth-name">Nome (só no cadastro)</label>
-          <input type="text" id="auth-name" placeholder="Ex: Gustavo">
-        </div>
-        <div class="form-group">
-          <label for="auth-email">E-mail</label>
-          <input type="email" id="auth-email" placeholder="aluno@easyfood.com">
-        </div>
-        <div class="form-group">
-          <label for="auth-password">Senha</label>
-          <input type="password" id="auth-password" placeholder="••••••">
-        </div>
-        <div style="display: flex; gap: 8px;">
-          <button type="button" class="submit-btn" id="login-btn" style="margin-top: 0;">Entrar</button>
-          <button type="button" class="submit-btn" id="register-btn" style="margin-top: 0; background: #555;">Criar conta</button>
-        </div>
-        <p id="auth-status" style="font-size: 12px; color: #2e7d32; margin-top: 10px; display: none;"></p>
+      <!-- Section header -->
+      <div class="section-header">
+        <h2>Restaurantes</h2>
+        <span class="order-btn">Ordenar ▾</span>
       </div>
-      <form id="add-restaurant-form">
-        <div class="form-group">
-          <label for="restaurant-name">Nome do Restaurante</label>
-          <input type="text" id="restaurant-name" placeholder="Ex: Taco Loco" required>
-        </div>
-        <div class="form-group">
-          <label for="restaurant-category">Categoria</label>
-          <select id="restaurant-category" required>
-            <option value="">Selecione uma categoria</option>
-            <option value="Burger">🍔 Burger</option>
-            <option value="Pizza">🍕 Pizza</option>
-            <option value="Sushi">🍣 Sushi</option>
-            <option value="Saudável">🥗 Saudável</option>
-            <option value="Mexicana">🌮 Mexicana</option>
-            <option value="Brasileira">🍛 Brasileira</option>
-            <option value="Japonesa">🍱 Japonesa</option>
-            <option value="Italiana">🍝 Italiana</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="restaurant-rating">Avaliação (0 a 5)</label>
-          <input type="number" id="restaurant-rating" placeholder="Ex: 4.3" min="0" max="5" step="0.1" required>
-        </div>
-        <button type="submit" class="submit-btn" id="submit-btn">Cadastrar Restaurante</button>
-      </form>
-      <div class="form-message" id="form-message"></div>
-    </div>
 
-    <!-- Bottom nav -->
-    <div class="bottom-nav">
-      <div class="nav-item active" data-view="home" onclick="switchView('home')">
-        <span class="icon">🏠</span>
-        <span>Início</span>
+      <!-- Restaurant list (scrollable) -->
+      <div class="restaurant-list" id="restaurant-list">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Carregando restaurantes...</p>
+        </div>
       </div>
-      <div class="nav-item" data-view="search" onclick="switchView('home')">
-        <span class="icon">🔍</span>
-        <span>Buscar</span>
+
+      <div class="add-restaurant-section" id="add-restaurant-section">
+        <h2>➕ Cadastrar Restaurante</h2>
+        <p class="subtitle" id="session-label" style="margin-bottom: 16px;"></p>
+        <form id="add-restaurant-form">
+          <div class="form-group">
+            <label for="restaurant-name">Nome do Restaurante</label>
+            <input type="text" id="restaurant-name" placeholder="Ex: Taco Loco" required>
+          </div>
+          <div class="form-group">
+            <label for="restaurant-category">Categoria</label>
+            <select id="restaurant-category" required>
+              <option value="">Selecione uma categoria</option>
+              <option value="Burger">🍔 Burger</option>
+              <option value="Pizza">🍕 Pizza</option>
+              <option value="Sushi">🍣 Sushi</option>
+              <option value="Saudável">🥗 Saudável</option>
+              <option value="Mexicana">🌮 Mexicana</option>
+              <option value="Brasileira">🍛 Brasileira</option>
+              <option value="Japonesa">🍱 Japonesa</option>
+              <option value="Italiana">🍝 Italiana</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="restaurant-rating">Avaliação (0 a 5)</label>
+            <input type="number" id="restaurant-rating" placeholder="Ex: 4.3" min="0" max="5" step="0.1" required>
+          </div>
+          <button type="submit" class="submit-btn" id="submit-btn">Cadastrar Restaurante</button>
+        </form>
+        <button type="button" class="logout-btn" id="logout-btn">Sair</button>
+        <div class="form-message" id="form-message"></div>
       </div>
-      <div class="nav-item" data-view="add" onclick="switchView('add')">
-        <span class="icon">➕</span>
-        <span>Cadastrar</span>
-      </div>
-      <div class="nav-item" data-view="favorites">
-        <span class="icon">❤️</span>
-        <span>Favoritos</span>
-      </div>
-      <div class="nav-item" data-view="profile">
-        <span class="icon">👤</span>
-        <span>Perfil</span>
+
+      <!-- Bottom nav -->
+      <div class="bottom-nav">
+        <div class="nav-item active" data-view="home" onclick="switchView('home')">
+          <span class="icon">🏠</span>
+          <span>Início</span>
+        </div>
+        <div class="nav-item" data-view="search" onclick="switchView('home')">
+          <span class="icon">🔍</span>
+          <span>Buscar</span>
+        </div>
+        <div class="nav-item" data-view="add" onclick="switchView('add')">
+          <span class="icon">➕</span>
+          <span>Cadastrar</span>
+        </div>
+        <div class="nav-item" data-view="favorites">
+          <span class="icon">❤️</span>
+          <span>Favoritos</span>
+        </div>
+        <div class="nav-item" data-view="profile">
+          <span class="icon">👤</span>
+          <span>Perfil</span>
+        </div>
       </div>
     </div>
   </div>
@@ -658,21 +736,51 @@
       return localStorage.getItem(TOKEN_KEY);
     }
 
-    function setToken(token) {
+    function setSession(token, user) {
       localStorage.setItem(TOKEN_KEY, token);
-      updateAuthStatus();
+      if (user) {
+        localStorage.setItem("easyfood_user", JSON.stringify(user));
+      }
     }
 
-    function updateAuthStatus() {
-      const status = document.getElementById("auth-status");
-      if (!status) return;
-      if (getToken()) {
-        status.style.display = "block";
-        status.textContent = "Sessão ativa. Você pode cadastrar restaurantes.";
-      } else {
-        status.style.display = "none";
-        status.textContent = "";
+    function clearSession() {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem("easyfood_user");
+    }
+
+    function getUser() {
+      try {
+        return JSON.parse(localStorage.getItem("easyfood_user") || "null");
+      } catch {
+        return null;
       }
+    }
+
+    function showScreen(name) {
+      document.getElementById("screen-login").classList.toggle("active", name === "login");
+      document.getElementById("screen-register").classList.toggle("active", name === "register");
+      document.getElementById("app-shell").classList.toggle("active", name === "app");
+    }
+
+    function requireLogin() {
+      if (!getToken()) {
+        showScreen("login");
+        return false;
+      }
+      return true;
+    }
+
+    function enterApp() {
+      showScreen("app");
+      const user = getUser();
+      const label = document.getElementById("session-label");
+      if (label) {
+        label.textContent = user
+          ? `Logado como ${user.name}. Cadastre um restaurante ou saia da sessão.`
+          : "Sessão ativa. Cadastre um restaurante ou saia da sessão.";
+      }
+      fetchRestaurants();
+      switchView("home");
     }
 
     // Emojis por categoria
@@ -844,15 +952,26 @@
 
     // ----- INICIALIZA -----
 
-    fetchRestaurants();
-    updateAuthStatus();
+    if (getToken()) {
+      enterApp();
+    } else {
+      showScreen("login");
+    }
 
     // =============================================================
     // Navegação entre views (Home / Cadastrar)
     // =============================================================
 
     function switchView(view) {
-      const homeElements = document.querySelectorAll('.search-bar, .categories, .section-header, .restaurant-list');
+      if (!requireLogin()) return;
+
+      if (view === 'add' && !getToken()) {
+        showScreen('login');
+        showAuthMessage('login-message', 'Faça login para cadastrar um restaurante.', 'error');
+        return;
+      }
+
+      const homeElements = document.querySelectorAll('#app-shell .search-bar, #app-shell .categories, #app-shell .section-header, #app-shell .restaurant-list');
       const addSection = document.getElementById('add-restaurant-section');
       const navItems = document.querySelectorAll('.nav-item');
 
@@ -864,7 +983,6 @@
         addSection.classList.remove('active');
       }
 
-      // Atualiza nav ativo
       navItems.forEach(item => {
         item.classList.remove('active');
         if (item.dataset.view === view) {
@@ -877,29 +995,26 @@
     // Autenticação - POST /auth/register e /auth/login
     // =============================================================
 
-    async function handleAuth(mode) {
-      const name = document.getElementById('auth-name').value.trim();
-      const email = document.getElementById('auth-email').value.trim();
-      const password = document.getElementById('auth-password').value;
+    function showAuthMessage(id, text, type) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'form-message ' + type;
+      setTimeout(() => {
+        el.className = 'form-message';
+      }, 4000);
+    }
 
-      if (!email || !password || (mode === 'register' && !name)) {
-        showFormMessage('Preencha os dados de autenticação.', 'error');
+    document.getElementById('go-register-btn').addEventListener('click', () => showScreen('register'));
+    document.getElementById('go-login-btn').addEventListener('click', () => showScreen('login'));
+
+    document.getElementById('login-btn').addEventListener('click', async () => {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      if (!email || !password) {
+        showAuthMessage('login-message', 'Preencha e-mail e senha.', 'error');
         return;
       }
-
       try {
-        if (mode === 'register') {
-          const registerResponse = await fetch(`${AUTH_URL}/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, password })
-          });
-          if (!registerResponse.ok) {
-            const err = await registerResponse.json().catch(() => ({}));
-            throw new Error(err.error || 'Falha no cadastro');
-          }
-        }
-
         const loginResponse = await fetch(`${AUTH_URL}/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -909,17 +1024,44 @@
           const err = await loginResponse.json().catch(() => ({}));
           throw new Error(err.error || 'Falha no login');
         }
-
         const data = await loginResponse.json();
-        setToken(data.token);
-        showFormMessage(`✅ Bem-vindo, ${data.user.name}!`, 'success');
+        setSession(data.token, data.user);
+        enterApp();
       } catch (error) {
-        showFormMessage(`❌ ${error.message}`, 'error');
+        showAuthMessage('login-message', `❌ ${error.message}`, 'error');
       }
-    }
+    });
 
-    document.getElementById('login-btn').addEventListener('click', () => handleAuth('login'));
-    document.getElementById('register-btn').addEventListener('click', () => handleAuth('register'));
+    document.getElementById('register-btn').addEventListener('click', async () => {
+      const name = document.getElementById('register-name').value.trim();
+      const email = document.getElementById('register-email').value.trim();
+      const password = document.getElementById('register-password').value;
+      if (!name || !email || !password) {
+        showAuthMessage('register-message', 'Preencha nome, e-mail e senha.', 'error');
+        return;
+      }
+      try {
+        const registerResponse = await fetch(`${AUTH_URL}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        if (!registerResponse.ok) {
+          const err = await registerResponse.json().catch(() => ({}));
+          throw new Error(err.error || 'Falha no cadastro');
+        }
+        showScreen('login');
+        showAuthMessage('login-message', '✅ Conta criada. Faça login para continuar.', 'success');
+      } catch (error) {
+        showAuthMessage('register-message', `❌ ${error.message}`, 'error');
+      }
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      clearSession();
+      showScreen('login');
+      showAuthMessage('login-message', 'Você saiu da conta.', 'success');
+    });
 
     // =============================================================
     // Cadastro de Restaurante - POST /restaurants (JWT)
@@ -933,7 +1075,8 @@
 
       const token = getToken();
       if (!token) {
-        showFormMessage('Faça login antes de cadastrar um restaurante.', 'error');
+        showScreen('login');
+        showAuthMessage('login-message', 'Faça login antes de cadastrar um restaurante.', 'error');
         return;
       }
 
@@ -961,8 +1104,8 @@
         });
 
         if (response.status === 401) {
-          localStorage.removeItem(TOKEN_KEY);
-          updateAuthStatus();
+          clearSession();
+          showScreen('login');
           throw new Error('Sessão expirada. Faça login novamente.');
         }
 
