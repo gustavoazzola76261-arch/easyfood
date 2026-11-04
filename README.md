@@ -1,55 +1,37 @@
 # EasyFood
 
-A EasyFood é um app educacional de **delivery**: o usuário consulta restaurantes, cria uma conta, faz login e só então cadastra novos estabelecimentos. O projeto replica o contrato HTTP das aulas de Software Architecture & Design Patterns, implementado em **Python/Flask**, com as decisões técnicas registradas em ADRs.
+A EasyFood é um app educacional de **delivery**: o usuário consulta restaurantes, cria uma conta, faz login e pode cadastrar o próprio estabelecimento. Dono e gerente gerenciam o **cardápio** (com imagem otimizada); o atendente só vê **pedidos**. Confirmações de conta, restaurante e prato saem pelo serviço compartilhado de e-mail.
 
-Fluxo do frontend:
+O projeto replica o contrato HTTP das aulas de Software Architecture & Design Patterns, em **Python/Flask**, com decisões registradas em ADRs.
 
-1. Tela de **login** (entrada da aplicação)
-2. **Inscreva-se** para criar uma conta de usuário (e voltar ao login)
-3. Após o login, lista de restaurantes e cadastro de restaurantes
-4. **Sair** encerra a sessão; sem JWT não é possível cadastrar restaurante (nem pela API)
+## Fluxo do app
 
-Persistência: **PostgreSQL** (`easyfood`) via SQLAlchemy + `psycopg2`. Os testes e o GitHub Actions usam SQLite em memória.
+1. **Login** (entrada). **Inscreva-se** cria a conta e volta ao login.
+2. **Início**: lista de restaurantes e cardápio público.
+3. **Buscar**: procura restaurante por nome ou categoria.
+4. **Perfil**: dados da conta, cadastro de restaurante e **Sair**.
+5. **Restaurante** (só aparece se a pessoa for dona ou da equipe):
+   - dono: imagem, cardápio, funcionários (gerente/atendente) e pedidos
+   - gerente: cardápio e pedidos
+   - atendente: somente pedidos
+
+Sem JWT não dá para criar restaurante nem alterar cardápio. Sem papel de dono/gerente não dá para mudar pratos.
 
 ## Como executar
 
-Pré-requisitos: Python 3.11+ e PostgreSQL com o banco `easyfood` criado.
-
-1. Clone o repositório e entre na pasta do projeto.
-2. Crie um ambiente virtual (recomendado) e instale as dependências:
+Pré-requisitos: Python 3.11+ e PostgreSQL com o banco `easyfood` (ou SQLite no `.env`).
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
-```
-
-3. Copie o arquivo de ambiente e ajuste usuário/senha se necessário:
-
-```bash
 copy .env.example .env
-```
-
-Valores esperados em `.env`:
-
-```
-DATABASE_URL=postgresql+psycopg2://postgres:1234@localhost:5432/easyfood
-JWT_SECRET=troque-por-uma-chave-longa-e-aleatoria
-```
-
-4. Suba o servidor:
-
-```bash
 python server.py
 ```
 
-5. Abra [http://localhost:3000](http://localhost:3000).
+Abra [http://localhost:3000](http://localhost:3000).
 
-Sem PostgreSQL local, descomente no `.env` a linha SQLite:
-
-```
-DATABASE_URL=sqlite:///easyfood.db
-```
+E-mail: sem `EMAIL_API_KEY` a confirmação aparece no terminal. Com chave Resend, o envio vai para a API. Imagens otimizadas ficam em `uploads/`.
 
 ## Testes
 
@@ -57,42 +39,36 @@ DATABASE_URL=sqlite:///easyfood.db
 pytest tests/ -v
 ```
 
-No GitHub, o workflow `.github/workflows/tests.yml` instala as dependências e executa o mesmo comando em cada push/PR.
+O GitHub Actions (`.github/workflows/tests.yml`) roda o mesmo comando em SQLite.
 
 ## Endpoints
 
-| Método | Rota | Auth |
+| Método | Rota | Quem |
 |--------|------|------|
-| GET | `/restaurants` | público |
-| POST | `/restaurants` | Bearer JWT |
+| GET | `/restaurants` | público (`?q=` busca) |
+| GET | `/restaurants/mine` | JWT |
+| GET | `/restaurants/:id` | público |
+| POST | `/restaurants` | JWT (vira dono) |
+| PATCH | `/restaurants/:id` | dono |
+| POST | `/restaurants/:id/image` | dono |
+| GET/POST | `/restaurants/:id/staff` | dono |
+| DELETE | `/restaurants/:id/staff/:userId` | dono |
+| GET | `/restaurants/:id/orders` | dono, gerente, atendente |
+| GET | `/restaurants/:id/dishes` | público |
+| POST/DELETE | `/restaurants/:id/dishes` | dono ou gerente |
+| POST | `/dishes/:id/image` | dono ou gerente |
 | POST | `/auth/register` | público |
 | POST | `/auth/login` | público |
-| GET | `/auth/me` | Bearer JWT |
+| GET | `/auth/me` | JWT |
 
-## Evolução (commits / ADRs)
+## Evolução (ADRs)
 
-Documentos em `ADRs/`:
-
-1. ADR-001 — Stack Python/Flask + `GET /restaurants`
+1. ADR-001 — Stack Python/Flask
 2. ADR-002 — `POST /restaurants` em memória
-3. ADR-003 — Persistência SQLAlchemy/SQLite
+3. ADR-003 — Persistência
 4. ADR-004 — Arquitetura em camadas
 5. ADR-005 — Autenticação JWT
-6. ADR-006 — Integração do frontend
-
-## Estrutura
-
-```
-server.py
-src/
-  app.py
-  database/
-  modules/
-    auth/
-    restaurants/
-public/
-  index.html
-tests/
-ADRs/
-.github/workflows/tests.yml
-```
+6. ADR-006 — Frontend
+7. ADR-007 — E-mail compartilhado
+8. ADR-008 — Imagens na própria API
+9. ADR-009 — Papéis por restaurante
