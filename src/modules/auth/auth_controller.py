@@ -4,6 +4,7 @@ from flask import jsonify, request
 
 from src.modules.auth import auth_service
 from src.modules.auth.auth_service import EmailAlreadyExistsError
+from src.modules.restaurants import restaurant_service
 
 
 def register():
@@ -42,9 +43,12 @@ def login():
 
 
 def me():
+    user = getattr(request, "user", None)
+    memberships = restaurant_service.list_memberships(user["id"]) if user else []
     return jsonify(
         {
             "message": "Você está autenticado!",
-            "user": getattr(request, "user", None),
+            "user": user,
+            "memberships": memberships,
         }
     )

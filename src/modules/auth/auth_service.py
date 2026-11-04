@@ -10,6 +10,7 @@ from sqlalchemy.exc import IntegrityError
 
 from src.database.db import get_session
 from src.database.models import User
+from src.modules.shared.email_service import escape_text, notify_safely
 
 JWT_SECRET = os.getenv("JWT_SECRET", "troque-por-uma-chave-longa-e-aleatoria")
 JWT_EXPIRES_HOURS = 24
@@ -27,9 +28,19 @@ def register(*, name: str, email: str, password: str) -> dict:
             session.add(user)
             session.commit()
             session.refresh(user)
-            return user.to_public_dict()
+            public = user.to_public_dict()
     except IntegrityError as exc:
         raise EmailAlreadyExistsError from exc
+
+    notify_safely(
+        to=email,
+        to_name=name,
+        subject="Conta criada na EasyFood",
+        header=f"Olá, {escape_text(name)}!",
+        body="Sua conta foi criada com sucesso. Agora você pode explorar restaurantes e, se quiser, cadastrar o seu.",
+        footer="Equipe EasyFood",
+    )
+    return public
 
 
 def login(*, email: str, password: str) -> dict | None:
@@ -54,3 +65,9 @@ def login(*, email: str, password: str) -> dict | None:
             "token": token,
             "user": user.to_public_dict(),
         }
+
+
+def get_user(user_id: int) -> dict | None:
+    with get_session() as session:
+        user = session.get(User, user_id)
+        return user.to_public_dict() if user else None

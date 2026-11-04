@@ -5,6 +5,7 @@ __pycache__/
 venv/
 .env
 Arquivos/
+uploads/
 *.db
 *.sqlite3
 .pytest_cache/

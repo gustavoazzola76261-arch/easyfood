@@ -1,13 +1,9 @@
+from tests.conftest import auth_header, register_and_login
+
+
 def _auth_token(client):
-    client.post(
-        "/auth/register",
-        json={"name": "Ana", "email": "ana@easyfood.com", "password": "senha123"},
-    )
-    login = client.post(
-        "/auth/login",
-        json={"email": "ana@easyfood.com", "password": "senha123"},
-    )
-    return login.get_json()["token"]
+    token, _user = register_and_login(client)
+    return token
 
 
 def test_list_restaurants_is_public(client):
@@ -49,6 +45,7 @@ def test_create_restaurant_with_login(client):
     listed = client.get("/restaurants").get_json()
     assert len(listed) == 1
     assert listed[0]["name"] == "Taco Loco"
+    assert listed[0]["ownerId"] is not None
 
 
 def test_create_restaurant_requires_name_and_category(client):
