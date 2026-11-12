@@ -12,6 +12,9 @@ import ssl
 import urllib.error
 import urllib.request
 from html import escape
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def build_html(*, header: str, body: str, footer: str) -> str:
@@ -29,6 +32,7 @@ def send_email(*, to: str, to_name: str, subject: str, header: str, body: str, f
     html = build_html(header=header, body=body, footer=footer)
     text = f"{header}\n\n{body}\n\n{footer}"
     api_key = os.getenv("EMAIL_API_KEY", "").strip()
+    print("[EMAIL DEBUG] API Key carregada:", bool(api_key))
 
     if not api_key:
         print(f'[EMAIL] Enviado para {to} - "{subject}"')
@@ -46,17 +50,35 @@ def send_email(*, to: str, to_name: str, subject: str, header: str, body: str, f
         os.getenv("EMAIL_API_URL", "https://api.resend.com/emails"),
         data=json.dumps(payload).encode("utf-8"),
         headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
+    "Authorization": f"Bearer {api_key}",
+    "Content-Type": "application/json",
+    "User-Agent": "EasyFood/1.0",
+},
         method="POST",
     )
     context = ssl.create_default_context()
+   
+    
     try:
         with urllib.request.urlopen(request, timeout=10, context=context) as response:
-            response.read()
+            response_body = response.read().decode("utf-8", errors="replace")
+
+            print("[EMAIL] Status HTTP:", response.status)
+            print("[EMAIL] Resposta do Resend:", response_body)
+
+    except urllib.error.HTTPError as exc:
+        response_body = exc.read().decode("utf-8", errors="replace")
+
+        raise RuntimeError(
+            f"Falha ao enviar e-mail: HTTP {exc.code}: {response_body}"
+        ) from exc
+
     except urllib.error.URLError as exc:
-        raise RuntimeError(f"Falha ao enviar e-mail: {exc}") from exc
+        raise RuntimeError(
+            f"Falha de conexão ao enviar e-mail: {exc}"
+        ) from exc
+
+
 
     print(f'[EMAIL] Enviado para {to} - "{subject}"')
 
